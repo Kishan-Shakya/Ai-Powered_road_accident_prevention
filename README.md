@@ -110,10 +110,10 @@ The web dashboard provides a clean interface for remote monitoring of system beh
 ## 📸 Hardware Simulation
 
 ### 🖥 Tinkercad Circuit Setup
-![Tinkercad Circuit](Docs/Tinkercad_image.png)
+![Tinkercad Circuit](docs/Tinkercad_image.png)
 
 ### 📊 Serial Monitor Output
-![Serial Monitor Output](Docs/Simulation_Serial_Monitor.png)
+![Serial Monitor Output](docs/Simulation_Serial_Monitor.png)
 
 ---
 
@@ -124,7 +124,7 @@ Ai-Powered_road_accident_prevention/
 │
 ├── Dashboard/       # Next.js Frontend
 ├── Arduino/         # Embedded System Code (.ino)
-├── Docs/            # Images and Diagrams
+├── docs/            # Images and Diagrams
 └── README.md        # Project Documentation
 
 ```
