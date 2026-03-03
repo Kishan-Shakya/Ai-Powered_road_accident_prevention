@@ -1,0 +1,13 @@
+# Node
+node_modules/
+.next/
+
+# Logs
+*.log
+
+# System
+.DS_Store
+Thumbs.db
+
+# Python (future)
+__pycache__/
