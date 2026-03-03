@@ -1,4 +1,3 @@
-
 # 🚗 AI-Powered Road Accident Prevention & Emergency Response System
 
 ## 📌 Project Overview
@@ -37,7 +36,8 @@ Road accidents often result in delayed emergency response due to:
 ---
 
 ## 🏗 System Architecture
- 
+
+```mermaid
 graph LR
     A[Potentiometers<br/>Sensor Simulation] -->|Analog Read| B[Arduino UNO<br/>Embedded Logic]
     B -->|Serial Communication| C[Next.js Dashboard<br/>Monitoring]
@@ -57,7 +57,6 @@ graph LR
 | **MPU6050** | Acceleration detection | 3 potentiometers (`A0`, `A1`, `A2`) |
 | **MAX30102** | Heart-rate monitoring | 1 potentiometer (`A3`) |
 | **MQ-3** | Alcohol detection | 1 potentiometer (`A4`) |
-
 
 **This approach allows for:**
 
@@ -111,12 +110,10 @@ The web dashboard provides a clean interface for remote monitoring of system beh
 ## 📸 Hardware Simulation
 
 ### 🖥 Tinkercad Circuit Setup
-
-*(Ensure the image is placed in the `docs` folder)*
+![Tinkercad Circuit](Docs/Tinkercad_image.png)
 
 ### 📊 Serial Monitor Output
-
-*(Ensure the image is placed in the `docs` folder)*
+![Serial Monitor Output](Docs/Simulation_Serial_Monitor.png)
 
 ---
 
@@ -125,9 +122,9 @@ The web dashboard provides a clean interface for remote monitoring of system beh
 ```text
 Ai-Powered_road_accident_prevention/
 │
-├── dashboard/       # Next.js Frontend
-├── arduino/         # Embedded System Code (.ino)
-├── docs/            # Images and Diagrams
+├── Dashboard/       # Next.js Frontend
+├── Arduino/         # Embedded System Code (.ino)
+├── Docs/            # Images and Diagrams
 └── README.md        # Project Documentation
 
 ```
@@ -139,19 +136,17 @@ Ai-Powered_road_accident_prevention/
 Navigate to the dashboard directory and install the required dependencies:
 
 ```bash
-cd dashboard
+cd Dashboard
 pnpm install
-
 ```
 
 Start the development server:
 
 ```bash
 pnpm dev
-
 ```
 
-Open your browser and navigate to: [http://localhost:3000](https://www.google.com/search?q=http://localhost:3000)
+Open your browser and navigate to: [http://localhost:3000](http://localhost:3000)
 
 ---
 
@@ -184,7 +179,8 @@ This project successfully demonstrates:
 
 ## 👨‍💻 Author
 
-**Krishna Chadda** B.Tech CSE (AI & ML Specialization)
+**Krishna Chadda**  
+B.Tech CSE (AI & ML Specialization)
 
 *Mini Project – 2026*
 
