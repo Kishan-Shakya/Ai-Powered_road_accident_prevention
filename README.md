@@ -317,6 +317,12 @@ This project successfully demonstrates:
 **Krishna Chadda**  
 B.Tech CSE (AI & ML Specialization)
 
+**Kishan Kumar Shakya**  
+B.Tech CSE (AI & ML Specialization)
+
+**Krishna Chaudhary**  
+B.Tech CSE (AI & ML Specialization)
+
 *Mini Project – 2026*
 
 ---
