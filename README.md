@@ -105,6 +105,9 @@ The web dashboard provides a clean interface for remote monitoring of system beh
 * Emergency Status Monitoring
 * Real-Time Updates
 
+### 🖥 Dashboard Interface
+![Dashboard Interface](docs/dashboard_interface.png)
+
 ---
 
 ## 📸 Hardware Simulation
@@ -122,8 +125,11 @@ The web dashboard provides a clean interface for remote monitoring of system beh
 ```text
 Ai-Powered_road_accident_prevention/
 │
-├── Dashboard/       # Next.js Frontend
 ├── Arduino/         # Embedded System Code (.ino)
+<<<<<<< HEAD
+=======
+├── Dashboard/       # Next.js Frontend
+>>>>>>> 6cb1e33 (Added dashboard interface screenshot to documentation)
 ├── docs/            # Images and Diagrams
 └── README.md        # Project Documentation
 
