@@ -4,7 +4,7 @@ export type EmergencyState = "NORMAL" | "COUNTDOWN_ACTIVE" | "EMERGENCY_CONFIRME
 
 export type SeverityLevel = "Minor" | "Moderate" | "Severe"
 
-export type EventType = "Accident" | "Heart" | "Alcohol"
+export type EventType = "Accident" | "Alcohol"
 
 export type EventAction = "Cancelled" | "Confirmed" | "Pending"
 
@@ -131,8 +131,6 @@ export const initialSeverityData: SeverityData = {
 
 export const sampleEvents: EventRecord[] = [
   { id: "1", time: "14:32:08", type: "Accident", severity: "Severe", action: "Confirmed" },
-  { id: "2", time: "13:18:45", type: "Heart", severity: "Moderate", action: "Cancelled" },
-  { id: "3", time: "11:05:12", type: "Alcohol", severity: "Minor", action: "Confirmed" },
-  { id: "4", time: "09:47:33", type: "Accident", severity: "Moderate", action: "Pending" },
-  { id: "5", time: "08:22:01", type: "Heart", severity: "Minor", action: "Cancelled" },
+  { id: "2", time: "11:05:12", type: "Alcohol", severity: "Minor", action: "Confirmed" },
+  { id: "3", time: "09:47:33", type: "Accident", severity: "Moderate", action: "Pending" },
 ]

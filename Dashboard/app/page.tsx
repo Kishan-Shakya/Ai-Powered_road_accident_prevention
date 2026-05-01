@@ -78,6 +78,15 @@ export default function DashboardPage() {
               ? firebaseData.sensor
               : firebaseData
 
+          // Check for emergency trigger from Firebase
+          const emergencyData = firebaseData.emergency
+          const isEmergencyTriggered =
+            emergencyData &&
+            typeof emergencyData === "object" &&
+            emergencyData.status === "TRIGGERED"
+          const emergencyReason =
+            emergencyData && emergencyData.reason ? emergencyData.reason : ""
+
           setSensors((prev) => {
             // Support Firebase shape: { sensor: { alcohol, distance, impact, vision } }
             const alcohol = parseNumberOrFallback(sensorPayload.alcohol, prev.alcohol.value)
@@ -99,7 +108,7 @@ export default function DashboardPage() {
               ultrasonic: {
                 value: parseFloat(ultrasonic.toFixed(1)),
                 unit: "cm",
-                status: ultrasonic > 4000 ? "normal" : ultrasonic > 2000 ? "warning" : "danger",
+                status: ultrasonic > 40 ? "normal" : ultrasonic > 20 ? "warning" : "danger",
               },
               mpu: {
                 value: parseFloat(mpu.toFixed(2)),
@@ -112,26 +121,34 @@ export default function DashboardPage() {
               },
             }
 
-            // Update emergency status based on sensor count
-            const highSensorCount = getHighSensorCount(newSensors)
-            const emergencyLevel = getEmergencyLevelFromSensors(highSensorCount)
+            // Update emergency status: prioritize Firebase emergency trigger
+            let emergencyLevel = getEmergencyLevelFromSensors(getHighSensorCount(newSensors))
+            if (isEmergencyTriggered) {
+              emergencyLevel = { state: "EMERGENCY_CONFIRMED" as EmergencyState, alertLevel: "Severe" }
+            }
             
             setEmergency({
               state: emergencyLevel.state,
-              countdown: 20,
+              countdown: emergencyLevel.state === "EMERGENCY_CONFIRMED" ? 20 : 20,
               alertLevel: emergencyLevel.alertLevel,
             })
 
-            // Update severity based on sensor count
+            // Update severity: prioritize Firebase emergency trigger
             let severityScore = 1.2
             let severityClassification: SeverityLevel = "Minor"
             
-            if (highSensorCount === 1) {
-              severityScore = 5.8
-              severityClassification = "Moderate"
-            } else if (highSensorCount >= 2) {
-              severityScore = 8.9
+            if (isEmergencyTriggered) {
+              severityScore = 9.5
               severityClassification = "Severe"
+            } else {
+              const highSensorCount = getHighSensorCount(newSensors)
+              if (highSensorCount === 1) {
+                severityScore = 5.8
+                severityClassification = "Moderate"
+              } else if (highSensorCount >= 2) {
+                severityScore = 8.9
+                severityClassification = "Severe"
+              }
             }
             
             setSeverity({

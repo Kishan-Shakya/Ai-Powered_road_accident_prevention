@@ -21,8 +21,6 @@ function getTypeBadge(type: EventRecord["type"]) {
   switch (type) {
     case "Accident":
       return "border-status-danger/40 text-status-danger bg-status-danger/10"
-    case "Heart":
-      return "border-status-warning/40 text-status-warning bg-status-warning/10"
     case "Alcohol":
       return "border-chart-5/40 text-chart-5 bg-chart-5/10"
     default:
