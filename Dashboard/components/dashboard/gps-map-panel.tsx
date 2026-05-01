@@ -10,7 +10,11 @@ interface GpsMapPanelProps {
   lastUpdated: string
 }
 
-export function GpsMapPanel({ lat, lng, lastUpdated }: GpsMapPanelProps) {
+export function GpsMapPanel({ lastUpdated }: GpsMapPanelProps) {
+
+  const lat = 27.60147256
+  const lng = 77.59771284
+
   const googleMapsUrl = `https://www.google.com/maps?q=${lat},${lng}`
   const embedUrl = `https://maps.google.com/maps?q=${lat},${lng}&z=15&output=embed`
 

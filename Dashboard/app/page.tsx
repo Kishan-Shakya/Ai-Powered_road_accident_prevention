@@ -18,11 +18,13 @@ import {
   type SeverityData,
   type EventRecord,
   type SensorStatus,
+  type EmergencyState,
   type SeverityLevel,
 } from "@/lib/dashboard-data"
 
-function randomFluctuation(base: number, range: number) {
-  return base + (Math.random() - 0.5) * range
+function parseNumberOrFallback(value: unknown, fallback: number): number {
+  const parsed = Number(value)
+  return Number.isFinite(parsed) ? parsed : fallback
 }
 
 function getSensorStatus(value: number, thresholds: { warning: number; danger: number; isReversed?: boolean }): SensorStatus {
@@ -36,6 +38,25 @@ function getSensorStatus(value: number, thresholds: { warning: number; danger: n
   return "normal"
 }
 
+function getHighSensorCount(sensors: SensorData): number {
+  let count = 0
+  if (sensors.alcohol.status === "warning" || sensors.alcohol.status === "danger") count++
+  if (sensors.ultrasonic.status === "warning" || sensors.ultrasonic.status === "danger") count++
+  if (sensors.mpu.status === "warning" || sensors.mpu.status === "danger") count++
+  return count
+}
+
+function getEmergencyLevelFromSensors(highSensorCount: number): { state: EmergencyState; alertLevel: SeverityLevel } {
+  if (highSensorCount === 0) {
+    return { state: "NORMAL", alertLevel: "Minor" }
+  } else if (highSensorCount === 1) {
+    return { state: "COUNTDOWN_ACTIVE", alertLevel: "Moderate" }
+  } else if (highSensorCount >= 2) {
+    return { state: "EMERGENCY_CONFIRMED", alertLevel: "Severe" }
+  }
+  return { state: "NORMAL", alertLevel: "Minor" }
+}
+
 export default function DashboardPage() {
   const [sensors, setSensors] = useState<SensorData>(initialSensorData)
   const [emergency, setEmergency] = useState<EmergencyData>(initialEmergencyData)
@@ -44,40 +65,95 @@ export default function DashboardPage() {
   const [lastUpdated, setLastUpdated] = useState("Just now")
   const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
-  // Simulate real-time sensor fluctuations
+  // Fetch Firebase data and update sensor readings
   useEffect(() => {
-    const interval = setInterval(() => {
-      setSensors((prev) => {
-        const accVal = randomFluctuation(prev.acceleration.value, 0.15)
-        const hrVal = randomFluctuation(prev.heartRate.value, 3)
-        const alcVal = Math.max(0, randomFluctuation(prev.alcohol.value, 0.005))
+    const fetchFirebaseData = async () => {
+      try {
+        const response = await fetch('/api/data')
+        const firebaseData = await response.json()
 
-        return {
-          acceleration: {
-            value: parseFloat(Math.max(0, accVal).toFixed(2)),
-            unit: "g",
-            status: getSensorStatus(accVal, { warning: 2.5, danger: 4.0 }),
-          },
-          heartRate: {
-            value: Math.round(Math.max(40, Math.min(200, hrVal))),
-            unit: "BPM",
-            status: getSensorStatus(hrVal, { warning: 110, danger: 140 }),
-          },
-          alcohol: {
-            value: parseFloat(alcVal.toFixed(3)),
-            unit: "BAC",
-            status: getSensorStatus(alcVal, { warning: 0.04, danger: 0.08 }),
-          },
-          drowsiness: prev.drowsiness,
-          gps: {
-            lat: parseFloat(randomFluctuation(prev.gps.lat, 0.0001).toFixed(6)),
-            lng: parseFloat(randomFluctuation(prev.gps.lng, 0.0001).toFixed(6)),
-          },
+        if (firebaseData && typeof firebaseData === 'object') {
+          const sensorPayload =
+            firebaseData.sensor && typeof firebaseData.sensor === "object"
+              ? firebaseData.sensor
+              : firebaseData
+
+          setSensors((prev) => {
+            // Support Firebase shape: { sensor: { alcohol, distance, impact, vision } }
+            const alcohol = parseNumberOrFallback(sensorPayload.alcohol, prev.alcohol.value)
+            const ultrasonic = parseNumberOrFallback(sensorPayload.distance, prev.ultrasonic.value)
+            const mpu = parseNumberOrFallback(sensorPayload.impact, prev.mpu.value)
+            const visionValue =
+              typeof sensorPayload.vision === "string" && sensorPayload.vision.trim().length > 0
+                ? sensorPayload.vision.trim().toUpperCase()
+                : prev.drowsiness.value
+            const visionStatus: SensorStatus = visionValue === "NORMAL" ? "normal" : "warning"
+
+            const newSensors = {
+              ...prev,
+              alcohol: {
+                value: parseFloat(alcohol.toFixed(3)),
+                unit: "BAC",
+                status: getSensorStatus(alcohol, { warning: 0.04, danger: 0.08 }),
+              },
+              ultrasonic: {
+                value: parseFloat(ultrasonic.toFixed(1)),
+                unit: "cm",
+                status: ultrasonic > 4000 ? "normal" : ultrasonic > 2000 ? "warning" : "danger",
+              },
+              mpu: {
+                value: parseFloat(mpu.toFixed(2)),
+                unit: "G",
+                status: getSensorStatus(mpu, { warning: 1.5, danger: 3.0 }),
+              },
+              drowsiness: {
+                value: visionValue,
+                status: visionStatus,
+              },
+            }
+
+            // Update emergency status based on sensor count
+            const highSensorCount = getHighSensorCount(newSensors)
+            const emergencyLevel = getEmergencyLevelFromSensors(highSensorCount)
+            
+            setEmergency({
+              state: emergencyLevel.state,
+              countdown: 20,
+              alertLevel: emergencyLevel.alertLevel,
+            })
+
+            // Update severity based on sensor count
+            let severityScore = 1.2
+            let severityClassification: SeverityLevel = "Minor"
+            
+            if (highSensorCount === 1) {
+              severityScore = 5.8
+              severityClassification = "Moderate"
+            } else if (highSensorCount >= 2) {
+              severityScore = 8.9
+              severityClassification = "Severe"
+            }
+            
+            setSeverity({
+              score: severityScore,
+              classification: severityClassification,
+            })
+
+            return newSensors
+          })
         }
-      })
 
-      setLastUpdated(new Date().toLocaleTimeString("en-US", { hour12: false }))
-    }, 2000)
+        setLastUpdated(new Date().toLocaleTimeString("en-US", { hour12: false }))
+      } catch (error) {
+        console.error("Error fetching Firebase data:", error)
+      }
+    }
+
+    // Fetch immediately on mount
+    fetchFirebaseData()
+
+    // Fetch every 1 second for real-time updates
+    const interval = setInterval(fetchFirebaseData, 1000)
 
     return () => clearInterval(interval)
   }, [])
@@ -85,7 +161,7 @@ export default function DashboardPage() {
   const startCountdown = useCallback(() => {
     setEmergency({
       state: "COUNTDOWN_ACTIVE",
-      countdown: 30,
+      countdown: 20,
       alertLevel: "Moderate",
     })
     setSeverity({ score: 5.8, classification: "Moderate" })
@@ -95,11 +171,14 @@ export default function DashboardPage() {
       ...prev,
       acceleration: { value: 4.7, unit: "g", status: "danger" },
       heartRate: { value: 145, unit: "BPM", status: "danger" },
+      alcohol: { value: 0.12, unit: "BAC", status: "danger" },
+      ultrasonic: { value: 15, unit: "cm", status: "danger" },
+      mpu: { value: 2.8, unit: "G", status: "danger" },
     }))
 
     if (countdownRef.current) clearInterval(countdownRef.current)
 
-    let count = 30
+    let count = 20
     countdownRef.current = setInterval(() => {
       count--
       if (count <= 0) {

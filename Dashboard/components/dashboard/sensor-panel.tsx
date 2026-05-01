@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import type { SensorData } from "@/lib/dashboard-data"
 import { getStatusColor, getStatusBg, getStatusDot } from "@/lib/dashboard-data"
-import { Activity, Heart, Droplets, Brain, MapPin } from "lucide-react"
+import { Activity, Droplets, Waves, Cpu, Brain, MapPin } from "lucide-react"
 
 interface SensorPanelProps {
   data: SensorData
@@ -60,20 +60,6 @@ export function SensorPanel({ data }: SensorPanelProps) {
       <CardContent>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <SensorCard
-            icon={Activity}
-            label="Acceleration"
-            value={data.acceleration.value.toFixed(2)}
-            unit={data.acceleration.unit}
-            status={data.acceleration.status}
-          />
-          <SensorCard
-            icon={Heart}
-            label="Heart Rate"
-            value={Math.round(data.heartRate.value)}
-            unit={data.heartRate.unit}
-            status={data.heartRate.status}
-          />
-          <SensorCard
             icon={Droplets}
             label="Alcohol"
             value={data.alcohol.value.toFixed(3)}
@@ -81,10 +67,24 @@ export function SensorPanel({ data }: SensorPanelProps) {
             status={data.alcohol.status}
           />
           <SensorCard
+            icon={Waves}
+            label="Distance"
+            value={data.ultrasonic.value.toFixed(1)}
+            unit={data.ultrasonic.unit}
+            status={data.ultrasonic.status}
+          />
+          <SensorCard
+            icon={Cpu}
+            label="Impact"
+            value={data.mpu.value.toFixed(2)}
+            unit={data.mpu.unit}
+            status={data.mpu.status}
+          />
+          <SensorCard
             icon={Brain}
-            label="Drowsiness"
+            label="Vision"
             value={data.drowsiness.value}
-            unit="AI"
+            unit=""
             status={data.drowsiness.status}
           />
         </div>

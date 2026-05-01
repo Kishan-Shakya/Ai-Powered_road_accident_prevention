@@ -12,6 +12,8 @@ export interface SensorData {
   acceleration: { value: number; unit: string; status: SensorStatus }
   heartRate: { value: number; unit: string; status: SensorStatus }
   alcohol: { value: number; unit: string; status: SensorStatus }
+  ultrasonic: { value: number; unit: string; status: SensorStatus }
+  mpu: { value: number; unit: string; status: SensorStatus }
   drowsiness: { value: string; status: SensorStatus }
   gps: { lat: number; lng: number }
 }
@@ -110,13 +112,15 @@ export const initialSensorData: SensorData = {
   acceleration: { value: 1.02, unit: "g", status: "normal" },
   heartRate: { value: 72, unit: "BPM", status: "normal" },
   alcohol: { value: 0.01, unit: "BAC", status: "normal" },
+  ultrasonic: { value: 150, unit: "cm", status: "normal" },
+  mpu: { value: 0.5, unit: "G", status: "normal" },
   drowsiness: { value: "Alert", status: "normal" },
   gps: { lat: 24.8607, lng: 67.0011 },
 }
 
 export const initialEmergencyData: EmergencyData = {
   state: "NORMAL",
-  countdown: 30,
+  countdown: 20,
   alertLevel: "Minor",
 }
 
