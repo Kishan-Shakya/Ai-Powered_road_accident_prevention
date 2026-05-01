@@ -3,8 +3,6 @@ services:
     type: web
     runtime: node
     plan: free
-    repo: https://github.com/Kishan-Shakya/Ai-Powered_road_accident_prevention
-    branch: main
     rootDir: Dashboard
 
     buildCommand: npm install && npm run build
@@ -13,5 +11,3 @@ services:
     envVars:
       - key: NODE_ENV
         value: production
-
-    autoDeployTrigger: commit
